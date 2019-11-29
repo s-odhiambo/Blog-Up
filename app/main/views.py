@@ -18,7 +18,7 @@ from app.requests import getQuotes
 def index():
     quotes = getQuotes()
     posts = Post.query.all()
-    return render_template('index.html', quotes=quotes, posts=posts, current_user=current_user)
+    return render_template('index.html', quotes = quotes, posts = posts, current_user = current_user)
 
 
 def save_picture(form_picture):
@@ -35,7 +35,7 @@ def save_picture(form_picture):
     return picture_fn
 
 
-@main.route('/profile', methods=['GET', 'POST'])
+@main.route('/profile', methods = ['GET', 'POST'])
 @login_required
 def profile():
     form = UpdateAccountForm()
@@ -51,34 +51,34 @@ def profile():
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
-    image_file = url_for('static', filename='profile_pic/' + current_user.image_file)
-    return render_template('profile/profile.html', title='Profile', image_file=image_file, form=form)
+    image_file = url_for('static', filename = 'profile_pic/' + current_user.image_file)
+    return render_template('profile/profile.html', title = 'Profile', image_file = image_file, form = form)
 
 
-@main.route("/new_post", methods=['GET', 'POST'])
+@main.route("/new_post", methods = ['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(title=form.title.data, content=form.content.data, author=current_user)
+        post = Post(title = form.title.data, content = form.content.data, author = current_user)
         post.save()
         flash('Your post has been created!', 'success')
         return redirect(url_for('main.index'))
-    return render_template('new_post.html', title='New Post',
-                           form=form, legend='New Post')
+    return render_template('new_post.html', title = 'New Post',
+                           form = form, legend = 'New Post')
 
 
 @main.route("/post/<int:post_id>")
 @login_required
 def mypost(post_id):
-    comments = Comment.query.filter_by(post_id=post_id).all()
+    comments = Comment.query.filter_by(post_id = post_id).all()
     print(comments)
     heading = 'comments'
     post = Post.query.get_or_404(post_id)
-    return render_template('posts.html', title=post.title, post=post, comments=comments, heading=heading)
+    return render_template('posts.html', title = post.title, post = post, comments = comments, heading = heading)
 
 
-@main.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
+@main.route("/post/<int:post_id>/update", methods = ['GET', 'POST'])
 @login_required
 def update_post(post_id):
     post = Post.query.get_or_404(post_id)
@@ -90,15 +90,15 @@ def update_post(post_id):
         post.content = form.content.data
         db.session.commit()
         flash('Your post has been updated!', 'success')
-        return redirect(url_for('main.mypost', post_id=post.id))
+        return redirect(url_for('main.mypost', post_id = post.id))
     elif request.method == 'GET':
         form.title.data = post.title
         form.content.data = post.content
-    return render_template('new_post.html', title='Update Post',
-                           form=form, legend='Update Post')
+    return render_template('new_post.html', title = 'Update Post',
+                           form = form, legend = 'Update Post')
 
 
-@main.route("/post/<int:post_id>/delete", methods=['POST'])
+@main.route("/post/<int:post_id>/delete", methods = ['POST'])
 @login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
@@ -109,7 +109,7 @@ def delete_post(post_id):
     return redirect(url_for('main.index'))
 
 
-@main.route('/like/<int:id>', methods=['POST', 'GET'])
+@main.route('/like/<int:id>', methods = ['POST', 'GET'])
 @login_required
 def upvote(id):
     post = Post.query.get(id)
@@ -118,10 +118,10 @@ def upvote(id):
     return redirect(url_for('main.myposts'))
 
 
-@main.route('/comment/<post_id>', methods=['Post', 'GET'])
+@main.route('/comment/<post_id>', methods = ['Post', 'GET'])
 @login_required
 def comment(post_id):
     comment = request.form.get('newcomment')
-    new_comment = Comment(comment=comment, user_id=current_user._get_current_object().id, post_id=post_id)
+    new_comment = Comment(comment = comment, user_id = current_user._get_current_object().id, post_id = post_id)
     new_comment.save()
-    return redirect(url_for('main.mypost', post_id=post_id))
+    return redirect(url_for('main.mypost', post_id = post_id))
