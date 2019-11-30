@@ -5,7 +5,7 @@ from flask_login import logout_user, login_user,current_user
 from app.auth import auth
 from app.auth.forms import LoginForm, RegisterForm
 from app.models import User
-from ..email import mail_message
+# from ..email import mail_message
 
 @auth.route("/login", methods = ['GET',"POST"])
 def login():

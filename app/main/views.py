@@ -17,8 +17,8 @@ from app.requests import getQuotes
 @main.route('/home')
 def index():
     quotes = getQuotes()
-    posts = Post.query.all()
-    return render_template('index.html', quotes = quotes, posts = posts, current_user = current_user)
+    # posts = Post.query.all()
+    return render_template('index.html', quotes = quotes,  current_user = current_user)
 
 
 def save_picture(form_picture):
