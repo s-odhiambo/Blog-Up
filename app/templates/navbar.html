@@ -1,22 +1,23 @@
 <header class="site-header">
     <nav class="navbar navbar-expand-md  fixed-top">
+        <hr>
         <div class="container">
-            <a class="navbar-brand mr-4" href="{{url_for('main.index')}}" style="color: whitesmoke;">Blog-Up</a>
+            <a class="navbar-brand mr-4" href="{{url_for('main.index')}}" style="color: whitesmoke; text-decoration: underline;">Blog-Up</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
                     aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarToggle">
                 <div class="navbar-nav mr-auto">
-                    <a class="nav-item nav-link" href="{{url_for('main.profile')}}" style="color: whitesmoke;">profile</a>
+                    <a class="nav-item nav-link" href="{{url_for('main.profile')}}" style="color: whitesmoke; text-decoration: underline;">profile</a>
                 </div>
               
                 <div class="navbar-nav">
-                    <a class="nav-item nav-link" href="{{ url_for('main.new_post') }}" style="color: whitesmoke;">New Post</a>
-                    <a class="nav-item nav-link" href="{{ url_for('auth.logout') }}" style="color: whitesmoke;">Logout</a>
+                    <a class="nav-item nav-link" href="{{ url_for('main.new_post') }}" style="color: whitesmoke; text-decoration: underline;">New Post</a>
+                    <a class="nav-item nav-link" href="{{ url_for('auth.logout') }}" style="color: whitesmoke; text-decoration: underline;">Logout</a>
 
-                    <a class="nav-item nav-link" href="{{ url_for('auth.login') }}" style="color: whitesmoke;">Login</a>
-                    <a class="nav-item nav-link" href="{{ url_for('auth.signup') }}" style="color: whitesmoke;">Register</a>
+                    <a class="nav-item nav-link" href="{{ url_for('auth.login') }}" style="color: whitesmoke; text-decoration: underline;">Login</a>
+                    <a class="nav-item nav-link" href="{{ url_for('auth.signup') }}" style="color: whitesmoke; text-decoration: underline;">Register</a>
 
                 </div>
             </div>
