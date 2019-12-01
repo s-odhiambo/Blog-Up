@@ -7,8 +7,8 @@ from flask_sqlalchemy import SQLAlchemy
 from config import Config
 
 
-# app.secret_key = 'samm'
 app = Flask(__name__)
+app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)

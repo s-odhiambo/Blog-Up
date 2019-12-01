@@ -6,7 +6,7 @@ from dotenv import load_dotenv as ld
 class Config:
     Debug = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-    SECRET_KEY = os.environ.get('samm')
+    app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
     DATABASE_URL= os.environ.get('postgresql+psycopg2://moringa:12345@localhost/blog_up')
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
