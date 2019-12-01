@@ -3,6 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <head>
     {% block styles %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css')}}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
@@ -10,14 +11,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Material Design Bootstrap -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.10/css/mdb.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
     {% endblock %}
 </head>
 <body>
 {% block navbar %}
-{%include 'navbar.html'%}
+{% include 'navbar.html'%}
 {% endblock %}
 <main role="main" class="container">
+    
     <div class="row">
         <div class="col-md-12">
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -52,3 +53,12 @@
 {% endblock %}
 </body>
 </html>
+
+<style>
+
+    body{
+       background-image: url("https://pikwizard.com/photos/1e2f6cc2b3e70f9fea9848433c1776c4-m.jpg");
+       background-repeat: no-repeat;
+       background-size: cover;
+    }
+</style>

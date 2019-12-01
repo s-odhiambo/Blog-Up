@@ -4,7 +4,7 @@ from dotenv import load_dotenv as ld
 
 
 class Config:
-    debug = True
+    Debug = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SECRET_KEY = os.environ.get('samm')
     DATABASE_URL= os.environ.get('postgresql+psycopg2://moringa:12345@localhost/blog_up')
