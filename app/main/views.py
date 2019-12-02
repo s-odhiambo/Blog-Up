@@ -1,127 +1,157 @@
-import os
-import secrets
-
-from PIL import Image
-from flask import render_template, url_for, redirect, request, flash, abort
-from flask_login import current_user, login_required
-
-from app import app
-from app import db
-from app.main import main
-from app.main.forms import UpdateAccountForm, PostForm
-from app.models import Post, Clap, Comment
-from app.requests import getQuotes
+from flask import render_template,request,redirect,url_for,abort,flash
+from . import main
+from .forms import PitchForm,CommentForm,UpdateProfile
+from ..models import User,Pitch,Comment
+from .. import db,photos
+import markdown2
+from flask_login import login_required, current_user
+import datetime
+from ..requests import random_post
 
 
+# Views
 @main.route('/')
-@main.route('/home')
 def index():
-    quotes = getQuotes()
-    # posts = Post.query.all()
-    return render_template('index.html', quotes = quotes,  current_user = current_user)
+
+    '''
+    View root page function that returns the index page and its data
+    '''
+    pitches =Pitch.query.order_by(Pitch.date.desc()).all()
+    title = "Home"
+    sambu = random_post()
+    quote = sambu["quote"]
+    quote_author = sambu ["author"]
+    return render_template('index.html', title = title, pitches = pitches, quote = quote , quote_author=quote_author)
 
 
-def save_picture(form_picture):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path, 'static/profile_pic', picture_fn)
+@main.route('/pitches/<category>')
+def pitches_category(category):
 
-    output_size = (125, 125)
-    i = Image.open(form_picture)
-    i.thumbnail(output_size)
-    i.save(picture_path)
+    '''
+    View function that returns blogs by category
+    '''
+    title = f'{category.upper()}'
+    if category == "all":
+        pitches = Pitch.query.order_by(Pitch.time.desc())
+    else:
+        pitches = Pitch.query.filter_by(category=category).order_by(Pitch.time.desc()).all()
 
-    return picture_fn
+    return render_template('pitches.html',title = title,pitches = pitches)
 
 
-@main.route('/profile', methods = ['GET', 'POST'])
+@main.route('/<uname>/new/pitch', methods=['GET','POST'])
 @login_required
-def profile():
-    form = UpdateAccountForm()
+def new_pitch(uname):
+    form = PitchForm()
+
+    user = User.query.filter_by(username = uname).first()
+
+    if user is None:
+        abort(404)
+
+    title_page = "Add New Post"
+
     if form.validate_on_submit():
-        if form.picture.data:
-            picture_file = save_picture(form.picture.data)
-            current_user.image_file = picture_file
-        current_user.username = form.username.data
-        current_user.email = form.email.data
+
+        title=form.title.data
+        content=form.content.data
+        category=form.category.data
+        date = datetime.datetime.now()
+        time = str(date.time())
+        time = time[0:5]
+        date = str(date)
+        date = date[0:10]
+        pitch = Pitch(title=title,
+                      content=content,
+                      category=category,
+                      user=current_user,
+                      date = date,
+                      time = time)
+
+        db.session.add(pitch)
         db.session.commit()
-        flash('Your account has been updated!', 'success')
-        return redirect(url_for('main.profile'))
-    elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.email.data = current_user.email
-    image_file = url_for('static', filename = 'profile_pic/' + current_user.image_file)
-    return render_template('profile/profile.html', title = 'Profile', image_file = image_file, form = form)
+
+        return redirect(url_for('main.pitches_category',category = category))
+
+    return render_template('new_pitch.html', title=title_page, form=form)
 
 
-@main.route("/new_post", methods = ['GET', 'POST'])
+@main.route("/<uname>/pitch/<pitch_id>/new/comment", methods = ["GET","POST"])
 @login_required
-def new_post():
-    form = PostForm()
+def new_comment(uname,pitch_id):
+    user = User.query.filter_by(username = uname).first()
+    pitch = Pitch.query.filter_by(id = pitch_id).first()
+
+    form = CommentForm()
+    title_page = "Comment Blog"
+
     if form.validate_on_submit():
-        post = Post(title = form.title.data, content = form.content.data, author = current_user)
-        post.save()
-        flash('Your post has been created!', 'success')
-        return redirect(url_for('main.index'))
-    return render_template('new_post.html', title = 'New Post',
-                           form = form, legend = 'New Post')
+        title = form.title.data
+        comment = form.comment.data
+        date = datetime.datetime.now()
+        time = str(date.time())
+        time = time[0:5]
+        date = str(date)
+        date = date[0:10]
+        new_comment = Comment(post_comment = comment, user = user, pitch = pitch,time = time, date = date )
 
-
-@main.route("/post/<int:post_id>")
-@login_required
-def mypost(post_id):
-    comments = Comment.query.filter_by(post_id = post_id).all()
-    print(comments)
-    heading = 'comments'
-    post = Post.query.get_or_404(post_id)
-    return render_template('posts.html', title = post.title, post = post, comments = comments, heading = heading)
-
-
-@main.route("/post/<int:post_id>/update", methods = ['GET', 'POST'])
-@login_required
-def update_post(post_id):
-    post = Post.query.get_or_404(post_id)
-    if post.author != current_user:
-        abort(403)
-    form = PostForm()
-    if form.validate_on_submit():
-        post.title = form.title.data
-        post.content = form.content.data
+        db.session.add(new_comment)
         db.session.commit()
-        flash('Your post has been updated!', 'success')
-        return redirect(url_for('main.mypost', post_id = post.id))
-    elif request.method == 'GET':
-        form.title.data = post.title
-        form.content.data = post.content
-    return render_template('new_post.html', title = 'Update Post',
-                           form = form, legend = 'Update Post')
+
+        return redirect(url_for("main.display_comments", pitch_id=pitch.id))
+    return render_template("comment.html", title = title_page,form = form,pitch = pitch)
 
 
-@main.route("/post/<int:post_id>/delete", methods = ['POST'])
+@main.route("/<pitch_id>/comments")
 @login_required
-def delete_post(post_id):
-    post = Post.query.get_or_404(post_id)
-    if post.author != current_user:
-        abort(403)
-    post.delete()
-    flash('Your post has been deleted!', 'success')
-    return redirect(url_for('main.index'))
+def display_comments(pitch_id):
+    # user = User.query.filter_by(username = current_user).first()
+    pitch = Pitch.query.filter_by(id = pitch_id).first()
+    title = "My Blog -- Comments"
+    comments = Comment.get_comments(pitch_id)
+
+    return render_template("display_comments.html", comments = comments,pitch = pitch,title = title)
 
 
-@main.route('/like/<int:id>', methods = ['POST', 'GET'])
+
+@main.route('/user/<uname>')
+def profile(uname):
+    user = User.query.filter_by(username = uname).first()
+
+    if user is None:
+        abort(404)
+
+    return render_template("profile/profile.html", user = user)
+
+
+
+@main.route('/user/<uname>/update',methods = ['GET','POST'])
 @login_required
-def upvote(id):
-    post = Post.query.get(id)
-    clap = Clap(post=post, upvote=1)
-    clap.save()
-    return redirect(url_for('main.myposts'))
+def update_profile(uname):
+    user = User.query.filter_by(username = uname).first()
+    if user is None:
+        abort(404)
+
+    form = UpdateProfile()
+
+    if form.validate_on_submit():
+        user.bio = form.bio.data
+
+        db.session.add(user)
+        db.session.commit()
+
+        return redirect(url_for('.profile',uname=user.username))
+
+    return render_template('profile/update.html',form =form)
 
 
-@main.route('/comment/<post_id>', methods = ['Post', 'GET'])
+@main.route('/user/<uname>/update/pic',methods= ['POST'])
 @login_required
-def comment(post_id):
-    comment = request.form.get('newcomment')
-    new_comment = Comment(comment = comment, user_id = current_user._get_current_object().id, post_id = post_id)
-    new_comment.save()
-    return redirect(url_for('main.mypost', post_id = post_id))
+def update_pic(uname):
+    user = User.query.filter_by(username = uname).first()
+    if 'photo' in request.files:
+        filename = photos.save(request.files['photo'])
+        path = f'photos/{filename}'
+        user.profile_pic_path = path
+        db.session.commit()
+    return redirect(url_for('main.profile',uname=uname))

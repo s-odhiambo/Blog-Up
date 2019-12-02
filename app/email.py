@@ -1,26 +1,12 @@
-from flask import Flask
-from flask_bootstrap import Bootstrap
-from flask_login import LoginManager
-from flask_mail import Mail
-from flask_sqlalchemy import SQLAlchemy
-
-from config import Config
-
-app = Flask(__name__)
-db = SQLAlchemy(app)
-login_manager = LoginManager()
-login_manager.init_app(app)
-bootstrap = Bootstrap(app)
-mail = Mail(app)
-login_manager.login_view = 'auth.login'
-login_manager.session_protection = 'strong'
-login_manager.login_message_category = 'info'
+from flask_mail import Message
+from flask import render_template
+from . import mail
 
 
-def create_app():
-    app.config.from_object(Config)
-    from .auth import auth as auth_blueprint
-    from .main import main as main_blueprint
-    app.register_blueprint(auth_blueprint)
-    app.register_blueprint(main_blueprint)
-    return app
+def mail_message(subject,template,to,**kwargs):
+    sender_email = "samuelangienda1998@gmail.com"
+
+    email = Message(subject, sender=sender_email, recipients=[to])
+    email.body= render_template(template + ".txt",**kwargs)
+    email.html = render_template(template + ".html",**kwargs)
+    mail.send(email)

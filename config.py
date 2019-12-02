@@ -1,21 +1,45 @@
 import os
 
-from dotenv import load_dotenv as ld
-
-
 class Config:
-    Debug = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-    app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
-    DATABASE_URL= os.environ.get('postgresql+psycopg2://moringa:12345@localhost/blog_up')
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    SENDGRID_API_KEY=os.environ.get('SENDGRID_API_KEY')
-    DEFAULT_SENDGRID_SENDER =  os.environ.get('DEFAULT_SENDGRID_SENDER')
 
-    #  email configurations
-    MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 465
-    MAIL_USE_TLS = False
-    MAIL_USE_SSL = True
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    UPLOADED_PHOTOS_DEST ='app/static/images'
+    SUBJECT_PREFIX = 'BLOG-UP'
+    SQLALCHEMY_DATABASE_URI='postgresql+psycopg2://moringa:12345@localhost/blog_up'
 
+
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    MAIL_SERVER = 'smtp.googlemail.com'
+    MAIL_PORT = 587
+    MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
+    SENDER_EMAIL = 'samuelangienda1998@gmail.com'
+    
+    MAIL_USE_TLS = True
+    WTF_CSRF_ENABLED = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    @staticmethod
+    def init_app(app):
+        pass
+
+
+class ProdConfig(Config):
+        SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+        debug = os.environ.get("DEBUG")
+        SQLALCHEMY_DATABASE_URI = os.environ.get("HEROKU_POSTGRESQL_CRIMSON_URL")
+
+
+class TestConfig(Config):
+    pass
+
+
+class DevConfig(Config):
+    
+    DEBUG = True
+
+config_options = {
+'development':DevConfig,
+'production':ProdConfig,
+'test':TestConfig
+}

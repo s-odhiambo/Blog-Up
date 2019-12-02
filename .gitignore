@@ -1,9 +1,5 @@
+virtual
 .env
-.idea/.gitignore
-.idea/inspectionProfiles/
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
-.idea/
-__pycache__/
-/virtual
+*pyc
+__pycache__
+.vscode
