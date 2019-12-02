@@ -19,16 +19,16 @@
                 aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-user"></i>&nbsp;<strong>{{current_user.username}}</strong> </a>
               <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
-                <a class="dropdown-item" href="{{url_for('main.profile',uname=current_user.username)}}"><i class="far fa-user"></i>&nbsp; My Dashboard</a>
-                <a class="dropdown-item" href="{{url_for('auth.logout')}}"><i class="fas fa-sign-out-alt"></i>&nbsp; Log out</a>
+                <a class="dropdown-item" style="font-family: 'Itim', cursive;" href="{{url_for('main.profile',uname=current_user.username)}}"><i class="far fa-user"></i>&nbsp; My Dashboard</a>
+                <a class="dropdown-item" style="font-family: 'Itim', cursive;" href="{{url_for('auth.logout')}}"><i class="fas fa-sign-out-alt"></i>&nbsp; Log out</a>
               </div>
               </li>
               {% else %}
                 <li class="nav-item">
-                    <a  class="nav-link mr-1" href="{{url_for('auth.register')}}"><i class="fas fa-user-plus"></i></i>&nbsp; <strong>Sign Up</strong></a>
+                    <a  class="nav-link mr-1" style="font-family: 'Itim', cursive;" href="{{url_for('auth.register')}}"><i class="fas fa-user-plus"></i></i>&nbsp; <strong>Sign Up</strong></a>
                 </li>
                 <li class="nav-item">
-                    <a  class="nav-link mr-5" href="{{url_for('auth.login')}}" ><i class="fas fa-sign-in-alt "></i>&nbsp; <strong>Log In</strong></a>
+                    <a  class="nav-link mr-5" style="font-family: 'Itim', cursive;" href="{{url_for('auth.login')}}" ><i class="fas fa-sign-in-alt "></i>&nbsp; <strong>Log In</strong></a>
                 </li>
               {%endif%}
     
