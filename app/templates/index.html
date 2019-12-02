@@ -3,14 +3,13 @@
 {% block content%}
 {% block styles %}
 {{super()}}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css')}}">
 {% endblock %}
-<div id="particles-js" class="container-fluid">
-</div>
+<div class="container">
 <div class="row d-flex h-100 mt-5">
   <div class="col-md-6">
-    <div class="card text-white default-color" style="max-width: 20rem;">
-      <div class="card-body">
+    <div class="card text-white default-color" style="max-width: 20rem; margin: 20%;">
+      <div  class="card-body">
         <blockquote class="blockquote mb-0">
           <p>{{quote}}</p>
           <footer class="blockquote-footer">Quote by <cite title="Author">"{{quote_author}}"</cite></footer>
@@ -19,14 +18,15 @@
     </div>
   </div>
   <div class="col-md-6">
-    <h1>Welcome to Blogchain</h1>
+    <h1 style="margin-top:25%; ">Welcome to Blog-Up</h1>
     <br>
     <p>Blog site for sharing thoughts.<br>Interact with us and get the latest blog posts</p>
     <br>
 
     <a href="{{ url_for('auth.register') }}" class="btn"
-      style="background-color: transparent;color:white; border: 1px solid whitesmoke;">Join Now</a>
+      style="background-color: transparent;color:green; border: 1px solid aqua;">Join Now</a>
   </div>
+</div>
 </div>
 
 {% endblock %}

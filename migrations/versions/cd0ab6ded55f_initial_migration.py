@@ -1,16 +1,16 @@
 """Initial Migration
 
-Revision ID: 06752217e8d9
+Revision ID: cd0ab6ded55f
 Revises: 
-Create Date: 2019-12-02 08:11:02.732964
+Create Date: 2019-12-02 09:00:18.574932
 
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import postgresql
+
 
 # revision identifiers, used by Alembic.
-revision = '06752217e8d9'
+revision = 'cd0ab6ded55f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,8 +31,6 @@ def upgrade():
     )
     op.create_index(op.f('ix_pitches_content'), 'pitches', ['content'], unique=False)
     op.create_index(op.f('ix_pitches_title'), 'pitches', ['title'], unique=False)
-    op.drop_table('posts')
-    op.drop_table('upvotes')
     op.add_column('comments', sa.Column('date', sa.String(), nullable=True))
     op.add_column('comments', sa.Column('pitch_id', sa.Integer(), nullable=True))
     op.add_column('comments', sa.Column('post_comment', sa.String(length=255), nullable=True))
@@ -41,10 +39,9 @@ def upgrade():
                existing_type=sa.INTEGER(),
                nullable=True)
     op.create_index(op.f('ix_comments_post_comment'), 'comments', ['post_comment'], unique=False)
-    op.drop_constraint('comments_post_id_fkey', 'comments', type_='foreignkey')
     op.create_foreign_key(None, 'comments', 'pitches', ['pitch_id'], ['id'])
-    op.drop_column('comments', 'post_id')
     op.drop_column('comments', 'comment')
+    op.drop_column('comments', 'post_id')
     op.add_column('users', sa.Column('bio', sa.String(length=255), nullable=True))
     op.add_column('users', sa.Column('password_hash', sa.String(length=255), nullable=True))
     op.add_column('users', sa.Column('profile_pic_path', sa.String(), nullable=True))
@@ -74,10 +71,9 @@ def downgrade():
     op.drop_column('users', 'profile_pic_path')
     op.drop_column('users', 'password_hash')
     op.drop_column('users', 'bio')
-    op.add_column('comments', sa.Column('comment', sa.TEXT(), autoincrement=False, nullable=True))
     op.add_column('comments', sa.Column('post_id', sa.INTEGER(), autoincrement=False, nullable=False))
+    op.add_column('comments', sa.Column('comment', sa.TEXT(), autoincrement=False, nullable=True))
     op.drop_constraint(None, 'comments', type_='foreignkey')
-    op.create_foreign_key('comments_post_id_fkey', 'comments', 'posts', ['post_id'], ['id'])
     op.drop_index(op.f('ix_comments_post_comment'), table_name='comments')
     op.alter_column('comments', 'user_id',
                existing_type=sa.INTEGER(),
@@ -86,23 +82,6 @@ def downgrade():
     op.drop_column('comments', 'post_comment')
     op.drop_column('comments', 'pitch_id')
     op.drop_column('comments', 'date')
-    op.create_table('upvotes',
-    sa.Column('id', sa.INTEGER(), autoincrement=True, nullable=False),
-    sa.Column('user_id', sa.INTEGER(), autoincrement=False, nullable=True),
-    sa.Column('post_id', sa.INTEGER(), autoincrement=False, nullable=True),
-    sa.ForeignKeyConstraint(['post_id'], ['posts.id'], name='upvotes_post_id_fkey'),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='upvotes_user_id_fkey'),
-    sa.PrimaryKeyConstraint('id', name='upvotes_pkey')
-    )
-    op.create_table('posts',
-    sa.Column('id', sa.INTEGER(), autoincrement=True, nullable=False),
-    sa.Column('title', sa.VARCHAR(), autoincrement=False, nullable=False),
-    sa.Column('date_posted', postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
-    sa.Column('content', sa.TEXT(), autoincrement=False, nullable=False),
-    sa.Column('user_id', sa.INTEGER(), autoincrement=False, nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], name='posts_user_id_fkey'),
-    sa.PrimaryKeyConstraint('id', name='posts_pkey')
-    )
     op.drop_index(op.f('ix_pitches_title'), table_name='pitches')
     op.drop_index(op.f('ix_pitches_content'), table_name='pitches')
     op.drop_table('pitches')

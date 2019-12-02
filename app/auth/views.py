@@ -22,7 +22,7 @@ def login():
 
     flash('Invalid username or password !')
 
-    title = "Blogchain Login"
+    title = "Blog-Up Login"
     return render_template('auth/login.html',login_form = login_form,title = title)
 
 
@@ -41,13 +41,13 @@ def register():
 
         flash("You've been successfully registered!")
 
-        mail_message("Welcome to Blogchain","email/welcome_user",user.email,user=user)
+        mail_message("Welcome to Blog-Up","email/welcome_user",user.email,user=user)
 
 
 
         return redirect(url_for('auth.login'))
 
-    title = "Blogchain registration"
+    title = "Blog-Up registration"
     return render_template('auth/register.html',registration_form = form, title = title)
 
 
